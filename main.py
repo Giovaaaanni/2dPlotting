@@ -1,3 +1,5 @@
+import math
+
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import random
@@ -50,15 +52,6 @@ class Item(object):
     def Yfinal(self):
         return self.h + self.posizioneItem.y
 
-versioni = ['V1Base', 'V2CornProj', 'V2CornProjDel']
-versione = versioni[0]
-parziali = [] #var in cui metto tutte le sol parziali della incrementale
-inst = 'cl_04_100_10'
-
-
-path = 'C:/Users/ADMIN/Desktop/Lavoro/2DFirstFit/' + versione + '/' + inst + '.txt'
-path_increment = 'C:/Users/ADMIN/Desktop/Lavoro/2DFirstFit/' + versione + '/' + inst + '_incremental.txt'
-
 
 def print_plot(current_bin):
     # define Matplotlib figure and axis
@@ -74,15 +67,16 @@ def print_plot(current_bin):
         ax.text((item.posizioneItem.x + item.Xfinal()) / 2, (item.posizioneItem.y + item.Yfinal()) / 2, item.itemID,
                 ha='center', va='center')
 
-    # metto un tick mark (della griglia) dove inizia e finisce un item, sia in altezza che larghezza
-    x_position = range(0, binList[0].W + 1, 1)
-    y_position = range(0, binList[0].H + 1, 1)
+    x_position = range(0, binList[0].W + 1, math.floor(binList[0].W/10))
+    y_position = range(0, binList[0].H + 1, math.floor(binList[0].H/10))
+    # x_position = range(0, binList[0].W + 1, 1)
+    # y_position = range(0, binList[0].H + 1, 1)
 
     ax.set_axisbelow(True) #metto la griglia in secondo piano rispetto ai rettangoli
     ax.set_aspect('equal') #per avere gli assi nella stessa scala
-    # metto la griglia con frequenza 1 e le label sugli assi 2
-    ax.set_xticks([tick for tick in x_position if tick % 2 == 0])
-    ax.set_yticks([tick for tick in y_position if tick % 2 == 0])
+    # metto la griglia con frequenza 10 per cento delle dimensioni dei bin
+    ax.set_xticks([tick for tick in x_position])
+    ax.set_yticks([tick for tick in y_position])
     ax.set_xticks(x_position, minor=True)
     ax.set_yticks(y_position, minor=True)
     ax.grid(which='both')
@@ -169,6 +163,7 @@ def readSolution():
     #     exit()
     return binList
 
+
 def readParziale(parz):
     input_sol = parz
     help1 = input_sol.split("W: ")[1]
@@ -204,6 +199,7 @@ def readParziale(parz):
 
     return binList
 
+
 def readIncrementSolution():
 
     file = open(path_increment, 'r')
@@ -224,7 +220,19 @@ def plotFinalSolution(binList, specific_bin):
     else:
         print_plot(binList[specific_bin])
 
+corner_generation_strategies = ['V1Base', 'V2CornProj', 'V2CornProjDel', 'V3Crainic']
+corn_gen = corner_generation_strategies[1]
+placement_strategies = ["FirstFit", "FV"]
+plac_strat = placement_strategies[0]
+inst = 'cl_03_020_08'
+inst = 'Martello_cl_1_item_25'
+inst = 'item10_W20_H35'
+inst = 'A10_44'
 
+
+path = 'C:/Users/ADMIN/Desktop/Lavoro/2DFirstFit/' + corn_gen + '/' + plac_strat + "_" + inst + '.txt'
+path_increment = 'C:/Users/ADMIN/Desktop/Lavoro/2DFirstFit/' + corn_gen + '/' + plac_strat + "_" + inst + '_incremental.txt'
+parziali = [] #var in cui metto tutte le sol parziali della incrementale
 def plotIncrementalSolution(specific_bin):
     if specific_bin < 0:
         for parz in parziali:
@@ -253,7 +261,7 @@ if __name__ == '__main__':
 
     readIncrementSolution()
 
-    #plotIncrementalSolution(3)
+    plotIncrementalSolution(-1)
 
     plotFinalSolution(binList, -1)
 
